@@ -792,8 +792,8 @@ public:
     std::vector<HMSItem>    hms_list;
 
     /* machine mqtt apis */
-    int connect(bool is_anonymous = false, bool use_openssl = true);
-    int disconnect();
+    virtual int connect(bool is_anonymous = false, bool use_openssl = true);
+    virtual int disconnect();
 
     json_diff print_json;
 

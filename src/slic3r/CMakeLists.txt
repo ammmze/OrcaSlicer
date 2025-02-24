@@ -521,8 +521,6 @@ set(SLIC3R_GUI_SOURCES
     Utils/minilzo_extension.cpp
     Utils/ColorSpaceConvert.hpp
     Utils/ColorSpaceConvert.cpp
-    Utils/OctoPrint.hpp
-    Utils/OctoPrint.cpp
     Utils/PrintHost.hpp
     Utils/PrintHost.cpp
     Utils/NetworkAgent.cpp
@@ -537,6 +535,8 @@ set(SLIC3R_GUI_SOURCES
     Utils/SerialMessage.hpp
     Utils/MKS.cpp
     Utils/MKS.hpp
+    Utils/Moonraker.cpp
+    Utils/Moonraker.hpp
     Utils/ESP3D.cpp
     Utils/ESP3D.hpp
     Utils/CrealityPrint.cpp

@@ -19,6 +19,7 @@
 #include "AstroBox.hpp"
 #include "Repetier.hpp"
 #include "MKS.hpp"
+#include "Moonraker.hpp"
 #include "ESP3D.hpp"
 #include "CrealityPrint.hpp"
 #include "../GUI/PrintHostDialogs.hpp"
@@ -54,6 +55,7 @@ PrintHost* PrintHost::get_print_host(DynamicPrintConfig *config)
 
         switch (host_type) {
             case htOctoPrint: return new OctoPrint(config);
+            case htMoonraker: return new Moonraker(config);
             case htDuet:      return new Duet(config);
             case htFlashAir:  return new FlashAir(config);
             case htAstroBox:  return new AstroBox(config);

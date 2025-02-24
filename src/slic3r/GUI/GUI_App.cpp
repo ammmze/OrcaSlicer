@@ -77,6 +77,7 @@
 #include "../Utils/MacDarkMode.hpp"
 #include "../Utils/Http.hpp"
 #include "../Utils/UndoRedo.hpp"
+// #include "../Utils/Moonraker.hpp"
 #include "slic3r/Config/Snapshot.hpp"
 #include "Preferences.hpp"
 #include "Tab.hpp"
@@ -2610,7 +2611,7 @@ bool GUI_App::on_init_inner()
 
 
     Bind(wxEVT_IDLE, [this](wxIdleEvent& event)
-    {
+    {// TODO: connect/disconnect to moonraker websocket, poll, etc
         bool curr_studio_active = this->is_studio_active();
         if (m_studio_active != curr_studio_active) {
             if (curr_studio_active) {
@@ -2852,6 +2853,21 @@ __retry:
             m_agent->set_country_code(country_code);
             m_agent->start();
         }
+        // TODO: start moonraker websocket?
+        // moonraker = new Slic3r::Moonraker();
+        // moonraker->test();
+
+        if (preset_bundle) {
+            std::cout << "has preset bundle" << std::endl;
+            for (auto printer_it = preset_bundle->printers.begin(); printer_it != preset_bundle->printers.end(); printer_it++) {
+                std::cout << "printer " << printer_it->name << std::endl;
+                // printer_it->config;
+                // print_id->config->option<ConfigOptionEnum<PrintHostType>>("host_type");
+            }
+        }
+
+        // DynamicPrintConfig* physical_printer_config = &Slic3r::GUI::wxGetApp().preset_bundle->printers.get_edited_preset().config;
+        // std::unique_ptr<PrintHost> host(PrintHost::get_print_host(physical_printer_config));
     }
     else {
         int result = Slic3r::NetworkAgent::unload_network_module();
@@ -5813,6 +5829,39 @@ void GUI_App::load_current_presets(bool active_preset_combox/*= false*/, bool ch
     // and create physical printer from it, if any exists
     if (check_printer_presets_)
         check_printer_presets();
+
+    if (preset_bundle && m_device_manager) {
+        std::cout << __FUNCTION__ << " has preset bundle" << std::endl;
+        auto current_preset = preset_bundle->printers.get_edited_preset().name;
+        
+        for (auto printer_it = preset_bundle->printers.begin(); printer_it != preset_bundle->printers.end(); printer_it++) {
+            auto cfg = printer_it->config;
+            if (!PhysicalPrinter::has_print_host_information(cfg)) {
+                continue;
+            }
+            std::unique_ptr<PrintHost> host(PrintHost::get_print_host(&cfg));
+            MachineObject* machine = host->get_machine(&(*printer_it));
+            // register in device manager;
+            if (machine != nullptr) {
+                auto list = m_device_manager->localMachineList;
+                auto it = list.find(machine->dev_id);
+                if (it == list.end()) {
+                    std::cout << "adding machine " << machine->dev_id << " to local machine list. address: " << machine << std::endl;
+                    m_device_manager->localMachineList[machine->dev_id] = machine;
+                    std::cout << "load_current_presets device manager " << m_device_manager << std::endl;
+                    if (current_preset == printer_it->name) {
+                        m_device_manager->set_selected_machine(machine->dev_id, true);
+                        machine->connect(false, true);
+                    }
+                }
+            }
+            // if (PhysicalPrinter::has_print_host_information(printer_it->config)) {
+                std::cout << "printer " << printer_it->name << std::endl;
+            // }
+            // printer_it->config;
+            // print_id->config->option<ConfigOptionEnum<PrintHostType>>("host_type");
+        }
+    }
 
     PrinterTechnology printer_technology = preset_bundle->printers.get_edited_preset().printer_technology();
 	this->plater()->set_printer_technology(printer_technology);

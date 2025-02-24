@@ -78,6 +78,7 @@ static t_config_enum_values s_keys_map_PrintHostType {
     { "prusalink",      htPrusaLink },
     { "prusaconnect",   htPrusaConnect },
     { "octoprint",      htOctoPrint },
+    { "moonraker",      htMoonraker },
     { "crealityprint",  htCrealityPrint },
     { "duet",           htDuet },
     { "flashair",       htFlashAir },
@@ -3607,6 +3608,7 @@ void PrintConfigDef::init_fff_params()
     def->enum_values.push_back("prusalink");
     def->enum_values.push_back("prusaconnect");
     def->enum_values.push_back("octoprint");
+    def->enum_values.push_back("moonraker");
     def->enum_values.push_back("duet");
     def->enum_values.push_back("flashair");
     def->enum_values.push_back("astrobox");
@@ -3621,6 +3623,7 @@ void PrintConfigDef::init_fff_params()
     def->enum_labels.push_back("PrusaLink");
     def->enum_labels.push_back("PrusaConnect");
     def->enum_labels.push_back("Octo/Klipper");
+    def->enum_labels.push_back("Moonraker (Klipper/Kalico)");
     def->enum_labels.push_back("Duet");
     def->enum_labels.push_back("FlashAir");
     def->enum_labels.push_back("AstroBox");

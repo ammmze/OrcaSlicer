@@ -1837,6 +1837,7 @@ bool SelectMachineDialog::do_ams_mapping(MachineObject *obj_)
     obj_->get_ams_colors(m_cur_colors_in_thumbnail);
     // try color and type mapping
     int result = obj_->ams_filament_mapping(m_filaments, m_ams_mapping_result);
+    std::cout << "do_ams_mapping" << obj_->dev_name << std::endl;
     if (result == 0) {
         print_ams_mapping_result(m_ams_mapping_result);
         std::string ams_array;
@@ -3420,6 +3421,8 @@ void SelectMachineDialog::update_show_status()
         }
         return;
     }
+    // std::cout << "update_show_status device manager " << dev << std::endl;
+    // std::cout << "update_show_status machine " << obj_ << " " << obj_->dev_name << std::endl;
 
     /* check cloud machine connections */
     if (!obj_->is_lan_mode_printer()) {

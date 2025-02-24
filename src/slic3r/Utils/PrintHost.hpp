@@ -10,6 +10,8 @@
 #include <wx/string.h>
 
 #include <libslic3r/enum_bitmask.hpp>
+#include "libslic3r/Preset.hpp"
+#include "slic3r/GUI/DeviceManager.hpp"
 #include "Http.hpp"
 #include <map>
 class wxArrayString;
@@ -63,6 +65,7 @@ public:
     // A print host usually does not support multiple printers, with the exception of Repetier server.
     virtual bool supports_multiple_printers() const { return false; }
     virtual std::string get_host() const = 0;
+    virtual MachineObject* get_machine(Preset *preset) { return nullptr; }
 
     // Support for Repetier server multiple groups & printers. Not supported by other print hosts.
     // Returns false if not supported. May throw HostNetworkError.

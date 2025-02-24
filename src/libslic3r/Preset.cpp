@@ -3127,6 +3127,12 @@ const std::vector<std::string>& PhysicalPrinter::printer_options()
     return s_PhysicalPrinter_opts;
 }
 
+static constexpr auto legacy_print_host_options = {
+    "print_host",
+    "printhost_apikey",
+    "printhost_cafile",
+};
+
 std::vector<std::string> PhysicalPrinter::presets_with_print_host_information(const PrinterPresetCollection& printer_presets)
 {
     std::vector<std::string> presets;
@@ -3139,6 +3145,10 @@ std::vector<std::string> PhysicalPrinter::presets_with_print_host_information(co
 
 bool PhysicalPrinter::has_print_host_information(const DynamicPrintConfig& config)
 {
+    for (const char *opt : legacy_print_host_options)
+        if (!config.opt_string(opt).empty())
+            return true;
+
     return false;
 }
 

@@ -1255,6 +1255,22 @@ void Sidebar::update_all_preset_comboboxes()
         //update print button default value for bbl or third-party printer
         p_mainframe->set_print_button_to_default(MainFrame::PrintSelectType::ePrintPlate);
     } else {
+        std::cout << "Updating preset comboboxes..." << std::endl;
+        // std::unique_ptr<PrintHost> host(PrintHost::get_print_host(&cfg));
+        // host->update_device_manager();
+        DeviceManager *dev_manager = Slic3r::GUI::wxGetApp().getDeviceManager();
+        if (dev_manager != nullptr) {
+            auto printer_preset = preset_bundle.printers.get_edited_preset();
+            auto dev_id = printer_preset.label(false);
+            std::cout << "Updating preset comboboxes...dev_id " << dev_id << std::endl;
+            auto list = dev_manager->localMachineList;
+            auto it = list.find(dev_id);
+            if (it != list.end()) {
+                std::cout << "found device with dev_id " << dev_id << " address " << it->second << std::endl;
+                it->second->connect(false, true);
+            }
+        }
+
         connection_btn->Show();
         ams_btn->Hide();
         auto print_btn_type = MainFrame::PrintSelectType::eExportGcode;
@@ -3127,7 +3143,7 @@ Plater::priv::priv(Plater *q, MainFrame *main_frame)
         q->Bind(EVT_GLTOOLBAR_SELECT_SLICED_PLATE, &priv::on_action_select_sliced_plate, this);
         q->Bind(EVT_GLTOOLBAR_PRINT_ALL, &priv::on_action_print_all, this);
         q->Bind(EVT_GLTOOLBAR_EXPORT_GCODE, &priv::on_action_export_gcode, this);
-        q->Bind(EVT_GLTOOLBAR_SEND_GCODE, &priv::on_action_send_gcode, this);
+        q->Bind(EVT_GLTOOLBAR_SEND_GCODE, &priv::on_action_print_plate /* &priv::on_action_print_plate */ /*on_action_send_gcode*/, this);
         q->Bind(EVT_GLTOOLBAR_EXPORT_SLICED_FILE, &priv::on_action_export_sliced_file, this);
         q->Bind(EVT_GLTOOLBAR_EXPORT_ALL_SLICED_FILE, &priv::on_action_export_all_sliced_file, this);
         q->Bind(EVT_GLTOOLBAR_SEND_TO_PRINTER, &priv::on_action_export_to_sdcard, this);
@@ -7198,8 +7214,13 @@ void Plater::priv::on_action_print_plate(SimpleEvent&)
         BOOST_LOG_TRIVIAL(debug) << __FUNCTION__ << ":received print plate event\n" ;
     }
 
+    BOOST_LOG_TRIVIAL(warning) << __FUNCTION__ << boost::format("do print plate");
+    DynamicPrintConfig* physical_printer_config = &Slic3r::GUI::wxGetApp().preset_bundle->printers.get_edited_preset().config;
+    // std::unique_ptr<PrintHost> host(PrintHost::get_print_host(physical_printer_config));
+    // host->update_device_manager();
+
     PresetBundle& preset_bundle = *wxGetApp().preset_bundle;
-    if (preset_bundle.use_bbl_network()) {
+    if (preset_bundle.use_bbl_network() || true) {
         // BBS
         if (!m_select_machine_dlg)
             m_select_machine_dlg = new SelectMachineDialog(q);
